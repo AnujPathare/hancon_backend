@@ -40,7 +40,9 @@ def get_predictions(frame, svm):
     with mp.solutions.hands.Hands(static_image_mode=True, max_num_hands=2, min_detection_confidence=0.7) as hands:
         try:
             keypts = extract_keypoints(mediapipe_detection(frame, hands))
-            return str(label_map[svm.predict(pd.DataFrame([keypts], columns)).max()])
+            predictions = str(label_map[svm.predict(pd.DataFrame([keypts], columns)).max()])
+            print(predictions)
+            return predictions
         except:
             pass
     
@@ -64,23 +66,23 @@ def map_to_keyboard(predictions):
         keyboard.press_and_release("ctrl+p")
 
     def restart_pc():
-        restart = input("Do you want to restart your computer? ( y or n ) : ")
-        if restart == "y" or restart == "Y":
+        # restart = input("Do you want to restart your computer? ( y or n ) : ")
+        # if restart == "y" or restart == "Y":
             # 0 is time that is for after what time we want to restart
             os.system("shutdown /r /t 1")
-        else:
-            exit()
+        # else:
+        #     exit()
 
-    if (get_predictions == '1'):
+    if (predictions == 'Close'):
         close_app()
 
-    elif(get_predictions == '2'):
+    elif(predictions == 'Print'):
         print_doc()
 
-    elif(get_predictions == '3'):
+    elif(predictions == 'Restart'):
         restart_pc()
 
-    elif(get_predictions == '0'):
+    elif(predictions == 'Save'):
         save_doc()
         
     else:

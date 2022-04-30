@@ -28,7 +28,9 @@ def show_frames():
     # Get the latest frame and convert into Image
     cv2image = cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2RGB)
     b1.destroy()
-    app_backend.map_to_keyboard(app_backend.get_predictions(cv2image, svm))
+    predictions = app_backend.get_predictions(cv2image, svm)
+    print(predictions)
+    app_backend.map_to_keyboard(predictions)
     img = Image.fromarray(cv2image)
     # Convert image to PhotoImage
     imgtk = ImageTk.PhotoImage(image=img)
