@@ -25,13 +25,13 @@ for i in range(63):
     columns.append(str(i))
 label_map = {1: 'Close', 2: 'Print', 3: 'Restart', 0: 'Save'}
 
-# key_map = {'Close': 'Alt + F4', 'Print': 'Ctrl + P',
-#            'Restart': 'Alt + F4 + down'}
+key_map = {'Close': 'Alt + F4', 'Print': 'Ctrl + P',
+            'Restart': 'Alt + F4 + down'}
 
 
 def prepare_model():
     time.sleep(10)
-    file_name = 'C:/Anuj/Semesters/Sem6/1_MIni_Project/TKinter/hand_model_27_04.sav'
+    file_name = 'hand_model_27_04.sav'
     hand_model = pickle.load(open(file_name, 'rb'))
     return hand_model
 
@@ -41,21 +41,19 @@ def get_predictions(frame, svm):
         try:
             keypts = extract_keypoints(mediapipe_detection(frame, hands))
             predictions = str(label_map[svm.predict(pd.DataFrame([keypts], columns)).max()])
-            print(predictions)
-            return predictions
         except:
             pass
     
 
 
-# def map_to_keyboard(predictions):
-#     try:
-#         key_map_value = key_map[predictions]
-#         keyboard.press_and_release(key_map_value)
-#     except:
-#         pass
-
 def map_to_keyboard(predictions):
+     try:
+        key_map_value = key_map[predictions]
+        keyboard.press_and_release(key_map_value)
+     except:
+        pass
+
+''''def map_to_keyboard(predictions):
     def close_app():
         keyboard.press_and_release("alt+f4")
 
@@ -86,4 +84,4 @@ def map_to_keyboard(predictions):
         save_doc()
         
     else:
-        pass
+        pass '''
