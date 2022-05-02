@@ -6,6 +6,7 @@ import pickle
 import time
 import keyboard
 import os
+from tensorflow import keras
 
 
 def mediapipe_detection(input_image, holistic):
@@ -23,24 +24,29 @@ def extract_keypoints(results):
 columns = []
 for i in range(63):
     columns.append(str(i))
-label_map = {1: 'Close', 2: 'Print', 3: 'Restart', 0: 'Save'}
+label_map = {2: 'Close', 1: 'Print', 3: 'Restart', 0: 'Save'}
 
-key_map = {'Close': 'Alt + F4', 'Print': 'Ctrl + P',
-            'Restart': 'Alt + F4 + down'}
+key_map = {'Close': 'Alt + F4', 'Print': 'Ctrl + p',
+            'Save' : 'Ctrl + s'}
 
 
 def prepare_model():
-    time.sleep(10)
-    file_name = 'hand_model_27_04.sav'
-    hand_model = pickle.load(open(file_name, 'rb'))
+    time.sleep(5)
+    file_name = 'C:/Coding/prok/hancon_backend/keypoint_classifier_2_5_300.hdf5'
+    hand_model = keras.models.load_model(file_name)
     return hand_model
 
 
-def get_predictions(frame, svm):
+def get_predictions(frame, nn):
     with mp.solutions.hands.Hands(static_image_mode=True, max_num_hands=2, min_detection_confidence=0.7) as hands:
         try:
             keypts = extract_keypoints(mediapipe_detection(frame, hands))
-            predictions = str(label_map[svm.predict(pd.DataFrame([keypts], columns)).max()])
+            #predictions = str(label_map[])
+            pred_probs=nn.predict(pd.DataFrame([keypts], columns))
+            if pred_probs.max()>0.8:
+               return label_map[np.argmax(pred_probs)]
+
+            #return predictions
         except:
             pass
     
@@ -50,6 +56,8 @@ def map_to_keyboard(predictions):
      try:
         key_map_value = key_map[predictions]
         keyboard.press_and_release(key_map_value)
+        #if predictions == 'Restart':
+            #os.system("shutdown /r /t 1")
      except:
         pass
 
@@ -66,7 +74,7 @@ def map_to_keyboard(predictions):
     def restart_pc():
         # restart = input("Do you want to restart your computer? ( y or n ) : ")
         # if restart == "y" or restart == "Y":
-            # 0 is time that is for after what time we want to restart
+             0 is time that is for after what time we want to restart
             os.system("shutdown /r /t 1")
         # else:
         #     exit()
